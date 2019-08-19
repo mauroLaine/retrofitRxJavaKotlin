@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">RetrofitRxJavaKotlin</string>
+    <string name="load">Load</string>
 </resources>
