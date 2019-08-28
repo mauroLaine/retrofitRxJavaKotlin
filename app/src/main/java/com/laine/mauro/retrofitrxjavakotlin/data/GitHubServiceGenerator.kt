@@ -3,6 +3,7 @@ package com.laine.mauro.retrofitrxjavakotlin.data
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
 class GitHubServiceGenerator {
@@ -17,6 +18,7 @@ class GitHubServiceGenerator {
         private val retrofitBuilder: Retrofit.Builder = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
             .client(okHttpClient.build())
 
         private lateinit var retrofit: Retrofit
