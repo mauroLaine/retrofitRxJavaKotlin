@@ -4,12 +4,12 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import com.laine.mauro.retrofitrxjavakotlin.data.GitHubServiceGenerator
-import com.laine.mauro.retrofitrxjavakotlin.data.UserService
+import com.laine.mauro.retrofitrxjavakotlin.data.UserServiceRx
 import com.laine.mauro.retrofitrxjavakotlin.model.Users
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_main.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import io.reactivex.schedulers.Schedulers
 
 class MainActivity : AppCompatActivity() {
 
@@ -23,19 +23,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun getData() {
-        val userService: UserService = GitHubServiceGenerator.createService(UserService::class.java)
-        val call = userService.getUsers()
+        val userService: UserServiceRx = GitHubServiceGenerator.createService(UserServiceRx::class.java)
+        val myCompositeDisposable = CompositeDisposable()
+        myCompositeDisposable.add(
+            userService.getUsers()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(this::handleResponse)
+        )
+    }
 
-        call.enqueue(object : Callback<List<Users.User>> {
-            override fun onFailure(call: Call<List<Users.User>>, t: Throwable) {
-                t.printStackTrace()
-            }
-
-            override fun onResponse(call: Call<List<Users.User>>, response: Response<List<Users.User>>) {
-                val users = response.body()
-                Log.d("####", "response: " + users?.size)
-            }
-
-        })
+    private fun handleResponse(users: List<Users.User>) {
+        for (user in users) {
+            Log.d("####", user.url)
+        }
     }
 }

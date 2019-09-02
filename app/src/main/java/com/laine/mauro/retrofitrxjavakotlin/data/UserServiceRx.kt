@@ -1,8 +1,8 @@
 package com.laine.mauro.retrofitrxjavakotlin.data
 
 import com.laine.mauro.retrofitrxjavakotlin.model.Users
+import io.reactivex.Observable
 import retrofit2.http.GET
-import rx.Observable
 
 interface UserServiceRx {
 
