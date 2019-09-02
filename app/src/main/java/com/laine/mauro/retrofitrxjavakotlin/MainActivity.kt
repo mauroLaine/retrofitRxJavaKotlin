@@ -13,19 +13,26 @@ import io.reactivex.schedulers.Schedulers
 
 class MainActivity : AppCompatActivity() {
 
+    lateinit var compositeDisposable: CompositeDisposable
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        compositeDisposable = CompositeDisposable()
         load_btn.setOnClickListener {
-            getData()
+            try {
+                Thread.sleep(5000)
+                getData()
+            } catch (e: InterruptedException) {
+                e.printStackTrace()
+            }
         }
     }
 
     fun getData() {
         val userService: UserServiceRx = GitHubServiceGenerator.createService(UserServiceRx::class.java)
-        val myCompositeDisposable = CompositeDisposable()
-        myCompositeDisposable.add(
+        compositeDisposable.add(
             userService.getUsers()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
@@ -37,5 +44,11 @@ class MainActivity : AppCompatActivity() {
         for (user in users) {
             Log.d("####", user.url)
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("####", "destroy")
+        compositeDisposable.dispose()
     }
 }
